@@ -451,22 +451,70 @@ const CUPOS_FIJOS = [
 ];
 
 // ═══════════════════════════════════════════════
-// STATE (resultados en localStorage)
+// SUPABASE CONFIG
 // ═══════════════════════════════════════════════
-function loadState(){
-  try{const s=localStorage.getItem('polla2026v2');if(s)return JSON.parse(s);}catch(e){}
-  return {pass:"admin2026",resultados:{},lastUpdate:null};
+const SB_URL='https://vkumoqewevvbzkkywlmo.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdW1vcWV3ZXZ2Ynpra3l3bG1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMjMzMzYsImV4cCI6MjA5NjY5OTMzNn0.eCKGuK7Pia7Hptw4ILATVUxsPBNhOV8736avpzsPA6A';
+
+async function sbFetch(path, opts={}){
+  const res=await fetch(SB_URL+'/rest/v1/'+path,{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal',...(opts.headers||{})},
+    ...opts
+  });
+  if(!res.ok){const t=await res.text();throw new Error(t);}
+  const ct=res.headers.get('content-type')||'';
+  if(ct.includes('json')&&res.status!==204){return res.json();}
+  return null;
 }
-function saveState(){
-  state.lastUpdate=new Date().toISOString();
-  localStorage.setItem('polla2026v2',JSON.stringify(state));
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+// pass solo en localStorage (no va a la DB)
+function getPass(){return localStorage.getItem('polla2026_pass')||'admin2026';}
+function setPass(p){localStorage.setItem('polla2026_pass',p);}
+
+// resultados vienen de Supabase
+let resultados={};  // {id:{gl,gv,updated_at}}
+let lastUpdate=null;
+
+async function loadResultados(){
+  try{
+    const rows=await sbFetch('resultados?select=id,gl,gv,updated_at');
+    resultados={};
+    rows.forEach(r=>{resultados[r.id]={gl:r.gl,gv:r.gv};});
+    if(rows.length>0){
+      lastUpdate=rows.reduce((max,r)=>r.updated_at>max?r.updated_at:max,rows[0].updated_at);
+    }
+  }catch(e){console.error('loadResultados:',e);}
 }
-let state=loadState();
+
+async function upsertResultado(id,gl,gv){
+  await sbFetch('resultados',{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify({id,gl,gv,updated_at:new Date().toISOString()})
+  });
+  resultados[id]={gl,gv};
+  lastUpdate=new Date().toISOString();
+}
+
+async function deleteResultado(id){
+  await sbFetch('resultados?id=eq.'+id,{method:'DELETE'});
+  delete resultados[id];
+  lastUpdate=new Date().toISOString();
+}
+
+async function deleteAllResultados(){
+  await sbFetch('resultados?id=neq.___none___',{method:'DELETE'});
+  resultados={};
+  lastUpdate=new Date().toISOString();
+}
 
 // Merge fixture with stored results
 function getFixture(){
   return FIXTURE.map(p=>{
-    const r=state.resultados[p.id];
+    const r=resultados[p.id];
     if(r) return {...p,jugado:true,gl:r.gl,gv:r.gv};
     return {...p};
   });
@@ -517,8 +565,8 @@ function renderTabla(){
     <div class="stat-card"><div class="stat-label">Bote total</div><div class="stat-value">$2.35M</div><div class="stat-sub">COP</div></div>
     <div class="stat-card"><div class="stat-label">Partidos</div><div class="stat-value">${jugados}<span style="font-size:14px;color:var(--text3)"> / 72</span></div><div class="stat-sub">fase de grupos</div></div>
     <div class="stat-card"><div class="stat-label">Líder</div><div class="stat-value" style="font-size:15px;">${lider.total>0?(lider.c.player+(lider.c.num?" #"+lider.c.num:"")):"—"}</div><div class="stat-sub">${lider.total>0?lider.total+" pts":"Sin partidos aún"}</div></div>`;
-  if(state.lastUpdate){
-    const d=new Date(state.lastUpdate);
+  if(lastUpdate){
+    const d=new Date(lastUpdate);
     document.getElementById('last-update-text').textContent="· "+d.toLocaleDateString('es')+" "+d.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
   }
   const tbody=document.getElementById('tabla-body');
@@ -650,7 +698,7 @@ function toggleAdmin(){
   if(!adminOpen){document.getElementById('admin-panel').style.display='none';document.getElementById('admin-auth').style.display='block';document.getElementById('admin-pass').value='';document.getElementById('auth-err').style.display='none';}
 }
 function checkAdmin(){
-  if(document.getElementById('admin-pass').value===state.pass){
+  if(document.getElementById('admin-pass').value===getPass()){
     document.getElementById('admin-auth').style.display='none';
     document.getElementById('admin-panel').style.display='block';
     populateFixtureSelect();renderAdminHistorial();
@@ -690,18 +738,19 @@ function onFixtureChange(){
   else{document.getElementById('p-glocal').value=0;document.getElementById('p-gvisit').value=0;}
 }
 
-function registrarResultado(){
+async function registrarResultado(){
   const id=document.getElementById('p-fixture').value;
   if(!id){showAlert('res-alert','Selecciona un partido',false);return;}
   const p=FIXTURE.find(x=>x.id===id);
   const gl=parseInt(document.getElementById('p-glocal').value)||0;
   const gv=parseInt(document.getElementById('p-gvisit').value)||0;
-  state.resultados[id]={gl,gv};
-  saveState();
-  const ln=EM[p.local]?EM[p.local].nombre:p.local;
-  const vn=EM[p.visitante]?EM[p.visitante].nombre:p.visitante;
-  showAlert('res-alert',`${ln} ${gl}–${gv} ${vn} registrado ✓`,true);
-  populateFixtureSelect();renderTabla();renderPartidos();renderCupos();
+  try{
+    await upsertResultado(id,gl,gv);
+    const ln=EM[p.local]?EM[p.local].nombre:p.local;
+    const vn=EM[p.visitante]?EM[p.visitante].nombre:p.visitante;
+    showAlert('res-alert',ln+' '+gl+'–'+gv+' '+vn+' registrado ✓',true);
+    populateFixtureSelect();renderAdminHistorial();renderTabla();renderPartidos();renderCupos();
+  }catch(e){showAlert('res-alert','Error guardando: '+e.message,false);}
 }
 
 function renderAdminHistorial(){
@@ -734,26 +783,29 @@ function renderAdminHistorial(){
   el.appendChild(wrap);
 }
 
-function borrarResultado(id){
+async function borrarResultado(id){
   if(!confirm('¿Borrar este resultado?'))return;
-  delete state.resultados[id];
-  saveState();
-  renderAdminHistorial();populateFixtureSelect();renderTabla();renderPartidos();renderCupos();
+  try{
+    await deleteResultado(id);
+    renderAdminHistorial();populateFixtureSelect();renderTabla();renderPartidos();renderCupos();
+  }catch(e){alert('Error borrando: '+e.message);}
 }
 
 function cambiarPass(){
   const v=document.getElementById('new-pass').value;
   if(!v)return;
-  state.pass=v;saveState();
+  setPass(v);
   alert('Contraseña cambiada ✓');
   document.getElementById('new-pass').value='';
 }
 
-function resetResultados(){
-  if(!confirm('¿Borrar TODOS los resultados? Los cupos se mantienen.'))return;
-  state.resultados={};saveState();
-  renderAdminHistorial();renderTabla();renderPartidos();renderCupos();
-  alert('Resultados borrados.');
+async function resetResultados(){
+  if(!confirm('¿Borrar TODOS los resultados?'))return;
+  try{
+    await deleteAllResultados();
+    renderAdminHistorial();renderTabla();renderPartidos();renderCupos();
+    alert('Resultados borrados.');
+  }catch(e){alert('Error: '+e.message);}
 }
 
 function showAlert(id,msg,ok){
@@ -765,20 +817,28 @@ function showAlert(id,msg,ok){
 // ═══════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════
-function showView(name,btn){
+async function showView(name,btn){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   if(btn)btn.classList.add('active');
+  await loadResultados();
   if(name==='partidos')renderPartidos();
-  if(name==='cupos')renderCupos('');
-  if(name==='tabla')renderTabla();
+  else if(name==='cupos')renderCupos('');
+  else renderTabla();
 }
 
 // ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
-renderTabla();
+async function init(){
+  // mostrar loading
+  document.getElementById('tabla-body').innerHTML=
+    '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3);">⏳ Cargando resultados...</td></tr>';
+  await loadResultados();
+  renderTabla();
+}
+init();
 </script>
 </body>
 </html>
