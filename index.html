@@ -140,7 +140,30 @@
   .partido-card:hover{border-color:var(--border2)}
   .cupo-card-public{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s}
   .cupo-card-public:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(0,61,165,.1)}
-  @media(max-width:640px){.stats-bar{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.header{padding:0 14px}.logo-sub{display:none}.nav-btn{padding:6px 11px;font-size:13px}.hero-strip{padding:14px 16px}}
+  .header-right{display:flex;align-items:center;gap:8px}
+  @media(max-width:640px){
+    .stats-bar{grid-template-columns:repeat(2,1fr)}
+    .form-grid{grid-template-columns:1fr}
+    .hero-strip{padding:12px 14px}
+    .hero-title{font-size:20px}
+    .hero-badge{font-size:11px;padding:4px 10px}
+    .main{padding:16px 12px}
+    .header{height:auto;flex-wrap:wrap;padding:10px 14px;gap:6px}
+    .logo-text{font-size:16px}
+    .logo-sub{display:none}
+    .header-right{width:100%;justify-content:space-between}
+    .nav{flex:1}
+    .nav-btn{flex:1;padding:7px 4px;font-size:12px;text-align:center}
+    .admin-btn{padding:6px 10px;font-size:12px;white-space:nowrap}
+    .col-equipos{display:none}
+    .col-detalle{display:none}
+    .player-badges-mobile{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+    .detail-btn-mobile{display:inline-block;margin-top:6px;padding:4px 10px;background:var(--bg);border:1.5px solid var(--border2);color:var(--text2);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif}
+  }
+  @media(min-width:641px){
+    .player-badges-mobile{display:none}
+    .detail-btn-mobile{display:none}
+  }
 </style>
 </head>
 <body>
@@ -153,12 +176,14 @@
       <div class="logo-sub">Polla Mundialista · 47 cupos</div>
     </div>
   </div>
-  <div class="nav">
-    <button class="nav-btn active" onclick="showView('tabla',this)">Tabla</button>
-    <button class="nav-btn" onclick="showView('partidos',this)">Partidos</button>
-    <button class="nav-btn" onclick="showView('cupos',this)">Cupos</button>
+  <div class="header-right">
+    <div class="nav">
+      <button class="nav-btn active" onclick="showView('tabla',this)">Tabla</button>
+      <button class="nav-btn" onclick="showView('partidos',this)">Partidos</button>
+      <button class="nav-btn" onclick="showView('cupos',this)">Cupos</button>
+    </div>
+    <button class="admin-btn" onclick="toggleAdmin()">🔐 Admin</button>
   </div>
-  <button class="admin-btn" onclick="toggleAdmin()">🔐 Admin</button>
 </div>
 <div class="hero-strip">
   <div>
@@ -174,7 +199,7 @@
     <div class="section-title">Tabla de Posiciones <span id="last-update-text"></span></div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>#</th><th>Jugador / Cupo</th><th>Equipos</th><th style="text-align:right">Pts</th><th style="text-align:right">Detalle</th></tr></thead>
+        <thead><tr><th>#</th><th>Jugador / Cupo</th><th class="col-equipos">Equipos</th><th style="text-align:right">Pts</th><th class="col-detalle" style="text-align:right">Detalle</th></tr></thead>
         <tbody id="tabla-body"></tbody>
       </table>
     </div>
@@ -578,11 +603,16 @@ function renderTabla(){
       return`<span class="badge${ep>0?' has-pts':''}" title="${EM[abv]?EM[abv].nombre:abv}">${abv}${ep>0?' +'+ep:''}</span>`;
     }).join('');
     return`<tr onclick="showDetail('${r.c.id}')">
-      <td class="pos ${pClass}">${pIcon}</td>
-      <td><div class="player-name">${r.c.player}</div><div class="player-cupo">${r.c.num?"Cupo #"+r.c.num:"Cupo único"}</div></td>
-      <td><div class="team-badges">${badges}</div></td>
-      <td style="text-align:right"><span class="pts">${r.total}</span></td>
-      <td style="text-align:right"><button class="detail-btn" onclick="event.stopPropagation();showDetail('${r.c.id}')">Ver detalle</button></td>
+      <td class="pos ${pClass}" style="white-space:nowrap">${pIcon}</td>
+      <td>
+        <div class="player-name">${r.c.player}</div>
+        <div class="player-cupo">${r.c.num?"Cupo #"+r.c.num:"Cupo único"}</div>
+        <div class="player-badges-mobile">${badges}</div>
+        <button class="detail-btn-mobile" onclick="event.stopPropagation();showDetail('${r.c.id}')">Ver detalle</button>
+      </td>
+      <td class="col-equipos"><div class="team-badges">${badges}</div></td>
+      <td style="text-align:right;white-space:nowrap"><span class="pts">${r.total}</span></td>
+      <td class="col-detalle" style="text-align:right"><button class="detail-btn" onclick="event.stopPropagation();showDetail('${r.c.id}')">Ver detalle</button></td>
     </tr>`;
   }).join('');
 }
