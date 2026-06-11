@@ -482,9 +482,16 @@ const SB_URL='https://vkumoqewevvbzkkywlmo.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdW1vcWV3ZXZ2Ynpra3l3bG1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMjMzMzYsImV4cCI6MjA5NjY5OTMzNn0.eCKGuK7Pia7Hptw4ILATVUxsPBNhOV8736avpzsPA6A';
 
 async function sbFetch(path, opts={}){
+  const headers={
+    'apikey':SB_KEY,
+    'Authorization':'Bearer '+SB_KEY,
+    'Content-Type':'application/json',
+  };
+  if(opts.prefer) headers['Prefer']=opts.prefer;
   const res=await fetch(SB_URL+'/rest/v1/'+path,{
-    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal',...(opts.headers||{})},
-    ...opts
+    method: opts.method||'GET',
+    headers,
+    body: opts.body||undefined
   });
   if(!res.ok){const t=await res.text();throw new Error(t);}
   const ct=res.headers.get('content-type')||'';
@@ -517,7 +524,7 @@ async function loadResultados(){
 async function upsertResultado(id,gl,gv){
   await sbFetch('resultados',{
     method:'POST',
-    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    prefer:'resolution=merge-duplicates,return=minimal',
     body:JSON.stringify({id,gl,gv,updated_at:new Date().toISOString()})
   });
   resultados[id]={gl,gv};
