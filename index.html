@@ -211,11 +211,12 @@
       <div class="section-title" style="margin-bottom:0">Partidos del Mundial</div>
       <div style="display:flex;gap:6px;">
         <select id="filtro-grupo" style="background:var(--surface);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;" onchange="renderPartidos()">
-          <option value="">Todos los grupos</option>
+          <option value="">Todos</option>
           <option>Grupo A</option><option>Grupo B</option><option>Grupo C</option><option>Grupo D</option>
           <option>Grupo E</option><option>Grupo F</option><option>Grupo G</option><option>Grupo H</option>
           <option>Grupo I</option><option>Grupo J</option><option>Grupo K</option><option>Grupo L</option>
-          <option>Fase Eliminatoria</option>
+          <option>16vos de Final</option><option>Cuartos de Final</option>
+          <option>Semifinal</option><option>Tercer Puesto</option><option>Final</option>
         </select>
         <select id="filtro-estado" style="background:var(--surface);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;" onchange="renderPartidos()">
           <option value="">Todos</option>
@@ -279,11 +280,15 @@
             </div>
             <div class="form-group">
               <label id="label-local">Goles Local</label>
-              <input type="number" id="p-glocal" min="0" value="0">
+              <input type="number" id="p-glocal" min="0" value="0" oninput="onGolesChange()">
             </div>
             <div class="form-group">
               <label id="label-visit">Goles Visitante</label>
-              <input type="number" id="p-gvisit" min="0" value="0">
+              <input type="number" id="p-gvisit" min="0" value="0" oninput="onGolesChange()">
+            </div>
+            <div class="form-group full-col" id="clasificado-wrap" style="display:none;background:#fff8ec;border:1.5px solid #f5d87a;border-radius:8px;padding:12px;">
+              <label style="color:#92600a;">⚠️ Empate en eliminatoria — ¿Quién avanza? (penales/prórroga)</label>
+              <select id="clasificado-sel"></select>
             </div>
           </div>
           <button class="btn btn-primary" onclick="registrarResultado()">✓ Registrar resultado</button>
@@ -422,6 +427,41 @@ const FIXTURE = [
   {id:"L4",grupo:"Grupo L",local:"PAN",visitante:"CRO",fecha:"2026-06-23",jugado:false,gl:0,gv:0},
   {id:"L5",grupo:"Grupo L",local:"PAN",visitante:"ENG",fecha:"2026-06-27",jugado:false,gl:0,gv:0},
   {id:"L6",grupo:"Grupo L",local:"CRO",visitante:"GHA",fecha:"2026-06-27",jugado:false,gl:0,gv:0},
+  // OCTAVOS DE FINAL
+  {id:"R16-1",grupo:"16vos de Final",local:"RSA",visitante:"CAN",fecha:"2026-06-28",jugado:false,gl:0,gv:0},
+  {id:"R16-2",grupo:"16vos de Final",local:"NED",visitante:"MAR",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
+  {id:"R16-3",grupo:"16vos de Final",local:"GER",visitante:"PAR",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
+  {id:"R16-4",grupo:"16vos de Final",local:"FRA",visitante:"SWE",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
+  {id:"R16-5",grupo:"16vos de Final",local:"POR",visitante:"CRO",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
+  {id:"R16-6",grupo:"16vos de Final",local:"ESP",visitante:"AUT",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
+  {id:"R16-7",grupo:"16vos de Final",local:"USA",visitante:"BIH",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
+  {id:"R16-8",grupo:"16vos de Final",local:"BEL",visitante:"SEN",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
+  {id:"R16-9",grupo:"16vos de Final",local:"BRA",visitante:"JPN",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
+  {id:"R16-10",grupo:"16vos de Final",local:"CIV",visitante:"NOR",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
+  {id:"R16-11",grupo:"16vos de Final",local:"MEX",visitante:"ECU",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
+  {id:"R16-12",grupo:"16vos de Final",local:"ENG",visitante:"COD",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
+  {id:"R16-13",grupo:"16vos de Final",local:"ARG",visitante:"CPV",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
+  {id:"R16-14",grupo:"16vos de Final",local:"AUS",visitante:"EGY",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
+  {id:"R16-15",grupo:"16vos de Final",local:"SUI",visitante:"ALG",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
+  {id:"R16-16",grupo:"16vos de Final",local:"COL",visitante:"GHA",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
+  // CUARTOS DE FINAL (equipos TBD según resultados)
+  {id:"QF-1",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-05",jugado:false,gl:0,gv:0},
+  {id:"QF-2",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-05",jugado:false,gl:0,gv:0},
+  {id:"QF-3",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-06",jugado:false,gl:0,gv:0},
+  {id:"QF-4",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-06",jugado:false,gl:0,gv:0},
+  {id:"QF-5",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-07",jugado:false,gl:0,gv:0},
+  {id:"QF-6",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-07",jugado:false,gl:0,gv:0},
+  {id:"QF-7",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-08",jugado:false,gl:0,gv:0},
+  {id:"QF-8",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-08",jugado:false,gl:0,gv:0},
+  // SEMIFINALES
+  {id:"SF-1",grupo:"Semifinal",local:"TBD",visitante:"TBD",fecha:"2026-07-14",jugado:false,gl:0,gv:0},
+  {id:"SF-2",grupo:"Semifinal",local:"TBD",visitante:"TBD",fecha:"2026-07-14",jugado:false,gl:0,gv:0},
+  {id:"SF-3",grupo:"Semifinal",local:"TBD",visitante:"TBD",fecha:"2026-07-15",jugado:false,gl:0,gv:0},
+  {id:"SF-4",grupo:"Semifinal",local:"TBD",visitante:"TBD",fecha:"2026-07-15",jugado:false,gl:0,gv:0},
+  // TERCER PUESTO
+  {id:"3RD",grupo:"Tercer Puesto",local:"TBD",visitante:"TBD",fecha:"2026-07-18",jugado:false,gl:0,gv:0},
+  // FINAL
+  {id:"FINAL",grupo:"Final",local:"TBD",visitante:"TBD",fecha:"2026-07-19",jugado:false,gl:0,gv:0},
 ];
 
 // 47 cupos del PDF
@@ -543,6 +583,94 @@ async function deleteAllResultados(){
   lastUpdate=new Date().toISOString();
 }
 
+// bracket: {partidoId: abvGanador}
+let bracket={};
+
+async function loadBracket(){
+  try{
+    const rows=await sbFetch('bracket?select=id,ganador');
+    bracket={};
+    rows.forEach(r=>{bracket[r.id]=r.ganador;});
+  }catch(e){console.error('loadBracket:',e);}
+}
+
+async function saveBracket(partidoId, ganador){
+  await sbFetch('bracket',{
+    method:'POST',
+    prefer:'resolution=merge-duplicates,return=minimal',
+    body:JSON.stringify({id:partidoId,ganador})
+  });
+  bracket[partidoId]=ganador;
+}
+
+async function deleteBracket(partidoId){
+  await sbFetch('bracket?id=eq.'+partidoId,{method:'DELETE'});
+  delete bracket[partidoId];
+}
+
+// Devuelve el ganador de un partido (abv) o null si no hay resultado/clasificado aún
+function getGanador(pid){
+  const p=getFixture().find(x=>x.id===pid);
+  if(!p||!p.jugado) return null;
+  if(p.gl>p.gv) return p.local;
+  if(p.gv>p.gl) return p.visitante;
+  // empate: revisar bracket manual
+  return bracket[pid]||null;
+}
+
+// Actualiza los equipos TBD de fases posteriores según resultados
+function getFixtureConBracket(){
+  const fx=getFixture();
+  // helper
+  const g=pid=>getGanador(pid);
+
+  // Cuartos: ganadores de octavos
+  // Lado izquierdo del bracket
+  setTBD(fx,'QF-1', g('R16-3'), g('R16-4'));   // GER/PAR vs FRA/SWE
+  setTBD(fx,'QF-2', g('R16-1'), g('R16-2'));   // RSA/CAN vs NED/MAR
+  setTBD(fx,'QF-3', g('R16-5'), g('R16-6'));   // POR/CRO vs ESP/AUT
+  setTBD(fx,'QF-4', g('R16-7'), g('R16-8'));   // USA/BIH vs BEL/SEN
+  // Lado derecho del bracket
+  setTBD(fx,'QF-5', g('R16-9'),  g('R16-10')); // BRA/JPN vs CIV/NOR
+  setTBD(fx,'QF-6', g('R16-11'), g('R16-12')); // MEX/ECU vs ENG/COD
+  setTBD(fx,'QF-7', g('R16-13'), g('R16-14')); // ARG/CPV vs AUS/EGY
+  setTBD(fx,'QF-8', g('R16-15'), g('R16-16')); // SUI/ALG vs COL/GHA
+
+  // Semifinales: ganadores de cuartos
+  setTBD(fx,'SF-1', g('QF-1'), g('QF-2'));
+  setTBD(fx,'SF-2', g('QF-3'), g('QF-4'));
+  setTBD(fx,'SF-3', g('QF-5'), g('QF-6'));
+  setTBD(fx,'SF-4', g('QF-7'), g('QF-8'));
+
+  // Tercer puesto: perdedores de semis
+  const p_sf1=getPerdedor('SF-1',fx), p_sf2=getPerdedor('SF-2',fx);
+  const p_sf3=getPerdedor('SF-3',fx), p_sf4=getPerdedor('SF-4',fx);
+  // tomamos el primer perdedor disponible de cada lado
+  setTBD(fx,'3RD', p_sf1||p_sf2, p_sf3||p_sf4);
+
+  // Final: ganadores de semis
+  setTBD(fx,'FINAL', g('SF-1')||g('SF-2'), g('SF-3')||g('SF-4'));
+
+  return fx;
+}
+
+function setTBD(fx, id, local, visit){
+  const p=fx.find(x=>x.id===id);
+  if(!p) return;
+  if(local) p.local=local;
+  if(visit) p.visitante=visit;
+}
+
+function getPerdedor(pid, fx){
+  const p=fx.find(x=>x.id===pid);
+  if(!p||!p.jugado) return null;
+  if(p.gl>p.gv) return p.visitante;
+  if(p.gv>p.gl) return p.local;
+  const gan=bracket[pid];
+  if(!gan) return null;
+  return gan===p.local?p.visitante:p.local;
+}
+
 // Merge fixture with stored results
 function getFixture(){
   return FIXTURE.map(p=>{
@@ -557,7 +685,7 @@ function getFixture(){
 // ═══════════════════════════════════════════════
 function calcPuntosEquipo(abv){
   const rows=[];
-  getFixture().forEach(p=>{
+  getFixtureConBracket().forEach(p=>{
     if(!p.jugado)return;
     const esLocal=p.local===abv, esVisit=p.visitante===abv;
     if(!esLocal&&!esVisit)return;
@@ -665,7 +793,9 @@ function closeDetail(){document.getElementById('detail-modal').classList.remove(
 function renderPartidos(){
   const filtroGrupo=document.getElementById('filtro-grupo').value;
   const filtroEstado=document.getElementById('filtro-estado').value;
-  let fixture=getFixture();
+  let fixture=getFixtureConBracket();
+  // ocultar partidos TBD sin equipos definidos aún
+  fixture=fixture.filter(p=>p.local!=='TBD'&&p.visitante!=='TBD');
   if(filtroGrupo)fixture=fixture.filter(p=>p.grupo===filtroGrupo);
   if(filtroEstado==='jugado')fixture=fixture.filter(p=>p.jugado);
   if(filtroEstado==='pendiente')fixture=fixture.filter(p=>!p.jugado);
@@ -752,9 +882,11 @@ function adminTab(id){
 
 function populateFixtureSelect(){
   const sel=document.getElementById('p-fixture');
-  const fixture=getFixture();
+  const fixture=getFixtureConBracket();
+  // solo mostrar partidos donde ambos equipos son conocidos (no TBD)
+  const disponibles=fixture.filter(p=>p.local!=='TBD'&&p.visitante!=='TBD');
   sel.innerHTML=`<option value="">— Selecciona un partido —</option>`+
-    fixture.map(p=>{
+    disponibles.map(p=>{
       const ln=EM[p.local]?EM[p.local].nombre:p.local;
       const vn=EM[p.visitante]?EM[p.visitante].nombre:p.visitante;
       const d=new Date(p.fecha+"T12:00:00");
@@ -762,30 +894,81 @@ function populateFixtureSelect(){
       const status=p.jugado?` ✓ (${p.gl}-${p.gv})`:'';
       return`<option value="${p.id}">${p.grupo} · ${ln} vs ${vn} — ${dateStr}${status}</option>`;
     }).join('');
+  // ocultar selector clasificado al cambiar partido
+  document.getElementById('clasificado-wrap').style.display='none';
 }
 
 function onFixtureChange(){
   const id=document.getElementById('p-fixture').value;
+  document.getElementById('clasificado-wrap').style.display='none';
   if(!id)return;
-  const p=getFixture().find(x=>x.id===id);
+  const p=getFixtureConBracket().find(x=>x.id===id);
   if(!p)return;
   document.getElementById('label-local').textContent=`Goles ${EM[p.local]?EM[p.local].nombre:p.local}`;
   document.getElementById('label-visit').textContent=`Goles ${EM[p.visitante]?EM[p.visitante].nombre:p.visitante}`;
-  if(p.jugado){document.getElementById('p-glocal').value=p.gl;document.getElementById('p-gvisit').value=p.gv;}
-  else{document.getElementById('p-glocal').value=0;document.getElementById('p-gvisit').value=0;}
+  if(p.jugado){
+    document.getElementById('p-glocal').value=p.gl;
+    document.getElementById('p-gvisit').value=p.gv;
+    // si hay empate y es eliminatoria, mostrar clasificado
+    if(p.gl===p.gv && p.grupo!=='Grupo A'&&!p.grupo.startsWith('Grupo')){
+      showClasificadoSelector(p);
+    }
+  }else{
+    document.getElementById('p-glocal').value=0;
+    document.getElementById('p-gvisit').value=0;
+  }
+}
+
+// listener en goles para mostrar selector si es empate en eliminatoria
+function onGolesChange(){
+  const id=document.getElementById('p-fixture').value;
+  if(!id)return;
+  const p=getFixtureConBracket().find(x=>x.id===id);
+  if(!p)return;
+  const gl=parseInt(document.getElementById('p-glocal').value)||0;
+  const gv=parseInt(document.getElementById('p-gvisit').value)||0;
+  const esElim=!p.grupo.startsWith('Grupo');
+  if(gl===gv&&esElim){
+    showClasificadoSelector(p);
+  }else{
+    document.getElementById('clasificado-wrap').style.display='none';
+  }
+}
+
+function showClasificadoSelector(p){
+  const ln=EM[p.local]?EM[p.local].nombre:p.local;
+  const vn=EM[p.visitante]?EM[p.visitante].nombre:p.visitante;
+  const wrap=document.getElementById('clasificado-wrap');
+  const sel=document.getElementById('clasificado-sel');
+  sel.innerHTML=`<option value="">— Selecciona quién avanza —</option>
+    <option value="${p.local}">${ln}</option>
+    <option value="${p.visitante}">${vn}</option>`;
+  if(bracket[p.id]) sel.value=bracket[p.id];
+  wrap.style.display='block';
 }
 
 async function registrarResultado(){
   const id=document.getElementById('p-fixture').value;
   if(!id){showAlert('res-alert','Selecciona un partido',false);return;}
-  const p=FIXTURE.find(x=>x.id===id);
+  const p=getFixtureConBracket().find(x=>x.id===id);
   const gl=parseInt(document.getElementById('p-glocal').value)||0;
   const gv=parseInt(document.getElementById('p-gvisit').value)||0;
+  const esElim=!p.grupo.startsWith('Grupo');
+  // validar clasificado en empate eliminatorio
+  if(gl===gv&&esElim){
+    const clas=document.getElementById('clasificado-sel').value;
+    if(!clas){showAlert('res-alert','Selecciona quién avanza en penales/prórroga',false);return;}
+    await saveBracket(id,clas);
+  }else{
+    // si había un bracket previo por empate, borrarlo
+    if(bracket[id]) await deleteBracket(id);
+  }
   try{
     await upsertResultado(id,gl,gv);
     const ln=EM[p.local]?EM[p.local].nombre:p.local;
     const vn=EM[p.visitante]?EM[p.visitante].nombre:p.visitante;
     showAlert('res-alert',ln+' '+gl+'–'+gv+' '+vn+' registrado ✓',true);
+    document.getElementById('clasificado-wrap').style.display='none';
     populateFixtureSelect();renderAdminHistorial();renderTabla();renderPartidos();renderCupos();
   }catch(e){showAlert('res-alert','Error guardando: '+e.message,false);}
 }
@@ -859,7 +1042,7 @@ async function showView(name,btn){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   if(btn)btn.classList.add('active');
-  await loadResultados();
+  await Promise.all([loadResultados(), loadBracket()]);
   if(name==='partidos')renderPartidos();
   else if(name==='cupos')renderCupos('');
   else renderTabla();
@@ -869,10 +1052,9 @@ async function showView(name,btn){
 // INIT
 // ═══════════════════════════════════════════════
 async function init(){
-  // mostrar loading
   document.getElementById('tabla-body').innerHTML=
     '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3);">⏳ Cargando resultados...</td></tr>';
-  await loadResultados();
+  await Promise.all([loadResultados(), loadBracket()]);
   renderTabla();
 }
 init();
