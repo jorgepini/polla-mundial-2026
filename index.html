@@ -216,7 +216,7 @@
           <option>Grupo A</option><option>Grupo B</option><option>Grupo C</option><option>Grupo D</option>
           <option>Grupo E</option><option>Grupo F</option><option>Grupo G</option><option>Grupo H</option>
           <option>Grupo I</option><option>Grupo J</option><option>Grupo K</option><option>Grupo L</option>
-          <option>16vos de Final</option><option>Cuartos de Final</option>
+          <option>16avos de Final</option><option>Octavos de Final</option><option>Cuartos de Final</option>
           <option>Semifinal</option><option>Tercer Puesto</option><option>Final</option>
         </select>
         <select id="filtro-estado" style="background:var(--surface);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;" onchange="renderPartidos()">
@@ -432,32 +432,37 @@ const FIXTURE = [
   {id:"L5",grupo:"Grupo L",local:"PAN",visitante:"ENG",fecha:"2026-06-27",jugado:false,gl:0,gv:0},
   {id:"L6",grupo:"Grupo L",local:"CRO",visitante:"GHA",fecha:"2026-06-27",jugado:false,gl:0,gv:0},
   // OCTAVOS DE FINAL
-  {id:"R16-1",grupo:"16vos de Final",local:"RSA",visitante:"CAN",fecha:"2026-06-28",jugado:false,gl:0,gv:0},
-  {id:"R16-2",grupo:"16vos de Final",local:"NED",visitante:"MAR",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
-  {id:"R16-3",grupo:"16vos de Final",local:"GER",visitante:"PAR",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
-  {id:"R16-4",grupo:"16vos de Final",local:"FRA",visitante:"SWE",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
-  {id:"R16-5",grupo:"16vos de Final",local:"POR",visitante:"CRO",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
-  {id:"R16-6",grupo:"16vos de Final",local:"ESP",visitante:"AUT",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
-  {id:"R16-7",grupo:"16vos de Final",local:"USA",visitante:"BIH",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
-  {id:"R16-8",grupo:"16vos de Final",local:"BEL",visitante:"SEN",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
-  {id:"R16-9",grupo:"16vos de Final",local:"BRA",visitante:"JPN",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
-  {id:"R16-10",grupo:"16vos de Final",local:"CIV",visitante:"NOR",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
-  {id:"R16-11",grupo:"16vos de Final",local:"MEX",visitante:"ECU",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
-  {id:"R16-12",grupo:"16vos de Final",local:"ENG",visitante:"COD",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
-  {id:"R16-13",grupo:"16vos de Final",local:"ARG",visitante:"CPV",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
-  {id:"R16-14",grupo:"16vos de Final",local:"AUS",visitante:"EGY",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
-  {id:"R16-15",grupo:"16vos de Final",local:"SUI",visitante:"ALG",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
-  {id:"R16-16",grupo:"16vos de Final",local:"COL",visitante:"GHA",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
+  {id:"R16-1",grupo:"16avos de Final",local:"RSA",visitante:"CAN",fecha:"2026-06-28",jugado:false,gl:0,gv:0},
+  {id:"R16-2",grupo:"16avos de Final",local:"NED",visitante:"MAR",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
+  {id:"R16-3",grupo:"16avos de Final",local:"GER",visitante:"PAR",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
+  {id:"R16-4",grupo:"16avos de Final",local:"FRA",visitante:"SWE",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
+  {id:"R16-5",grupo:"16avos de Final",local:"POR",visitante:"CRO",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
+  {id:"R16-6",grupo:"16avos de Final",local:"ESP",visitante:"AUT",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
+  {id:"R16-7",grupo:"16avos de Final",local:"USA",visitante:"BIH",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
+  {id:"R16-8",grupo:"16avos de Final",local:"BEL",visitante:"SEN",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
+  {id:"R16-9",grupo:"16avos de Final",local:"BRA",visitante:"JPN",fecha:"2026-06-29",jugado:false,gl:0,gv:0},
+  {id:"R16-10",grupo:"16avos de Final",local:"CIV",visitante:"NOR",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
+  {id:"R16-11",grupo:"16avos de Final",local:"MEX",visitante:"ECU",fecha:"2026-06-30",jugado:false,gl:0,gv:0},
+  {id:"R16-12",grupo:"16avos de Final",local:"ENG",visitante:"COD",fecha:"2026-07-01",jugado:false,gl:0,gv:0},
+  {id:"R16-13",grupo:"16avos de Final",local:"ARG",visitante:"CPV",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
+  {id:"R16-14",grupo:"16avos de Final",local:"AUS",visitante:"EGY",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
+  {id:"R16-15",grupo:"16avos de Final",local:"SUI",visitante:"ALG",fecha:"2026-07-02",jugado:false,gl:0,gv:0},
+  {id:"R16-16",grupo:"16avos de Final",local:"COL",visitante:"GHA",fecha:"2026-07-03",jugado:false,gl:0,gv:0},
   // CUARTOS DE FINAL
-  // CUARTOS DE FINAL
+  // OCTAVOS DE FINAL (Ronda de 16)
+  {id:"R8-1",grupo:"Octavos de Final",local:"CAN",visitante:"MAR",fecha:"2026-07-05",jugado:false,gl:0,gv:0},
+  {id:"R8-2",grupo:"Octavos de Final",local:"PAR",visitante:"FRA",fecha:"2026-07-05",jugado:false,gl:0,gv:0},
+  {id:"R8-3",grupo:"Octavos de Final",local:"BRA",visitante:"NOR",fecha:"2026-07-06",jugado:false,gl:0,gv:0},
+  {id:"R8-4",grupo:"Octavos de Final",local:"MEX",visitante:"ENG",fecha:"2026-07-06",jugado:false,gl:0,gv:0},
+  {id:"R8-5",grupo:"Octavos de Final",local:"POR",visitante:"ESP",fecha:"2026-07-07",jugado:false,gl:0,gv:0},
+  {id:"R8-6",grupo:"Octavos de Final",local:"USA",visitante:"BEL",fecha:"2026-07-07",jugado:false,gl:0,gv:0},
+  {id:"R8-7",grupo:"Octavos de Final",local:"ARG",visitante:"EGY",fecha:"2026-07-08",jugado:false,gl:0,gv:0},
+  {id:"R8-8",grupo:"Octavos de Final",local:"SUI",visitante:"COL",fecha:"2026-07-08",jugado:false,gl:0,gv:0},
+  // CUARTOS DE FINAL (Ronda de 8)
   {id:"QF-1",grupo:"Cuartos de Final",local:"FRA",visitante:"MAR",fecha:"2026-07-09",jugado:false,gl:0,gv:0},
   {id:"QF-2",grupo:"Cuartos de Final",local:"ESP",visitante:"BEL",fecha:"2026-07-10",jugado:false,gl:0,gv:0},
   {id:"QF-3",grupo:"Cuartos de Final",local:"NOR",visitante:"ENG",fecha:"2026-07-11",jugado:false,gl:0,gv:0},
   {id:"QF-4",grupo:"Cuartos de Final",local:"ARG",visitante:"SUI",fecha:"2026-07-11",jugado:false,gl:0,gv:0},
-  {id:"QF-5",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-12",jugado:false,gl:0,gv:0},
-  {id:"QF-6",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-12",jugado:false,gl:0,gv:0},
-  {id:"QF-7",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-13",jugado:false,gl:0,gv:0},
-  {id:"QF-8",grupo:"Cuartos de Final",local:"TBD",visitante:"TBD",fecha:"2026-07-13",jugado:false,gl:0,gv:0},
   // SEMIFINALES
   // SEMIFINALES (TBD - se agregan cuando se confirmen los cruces)
   // TERCER PUESTO
@@ -922,7 +927,7 @@ function onGolesChange(){
   if(!p)return;
   const gl=parseInt(document.getElementById('p-glocal').value)||0;
   const gv=parseInt(document.getElementById('p-gvisit').value)||0;
-  const esElim=!p.grupo.startsWith('Grupo');
+  const esElim=!p.grupo.startsWith('Grupo')&&!p.grupo.startsWith('16avos');
   if(gl===gv&&esElim){
     showClasificadoSelector(p);
   }else{
@@ -948,7 +953,7 @@ async function registrarResultado(){
   const p=getFixtureConBracket().find(x=>x.id===id);
   const gl=parseInt(document.getElementById('p-glocal').value)||0;
   const gv=parseInt(document.getElementById('p-gvisit').value)||0;
-  const esElim=!p.grupo.startsWith('Grupo');
+  const esElim=!p.grupo.startsWith('Grupo')&&!p.grupo.startsWith('16avos');
   // validar clasificado en empate eliminatorio
   if(gl===gv&&esElim){
     const clas=document.getElementById('clasificado-sel').value;
