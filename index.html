@@ -76,6 +76,7 @@
   .team-badges{display:flex;flex-wrap:wrap;gap:5px}
   .badge{display:inline-flex;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:700;background:var(--blue-light);color:var(--blue);border:1px solid #c5d3f5;font-family:'Barlow',sans-serif;letter-spacing:.3px}
   .badge.has-pts{background:#e6f7f1;color:var(--green);border-color:#b3e8d6}
+  .badge.elim{background:#fff0f0;color:#c0392b;border-color:#f5c0c0;text-decoration:line-through;opacity:.7}
   .detail-btn{padding:5px 12px;background:var(--surface2);border:1.5px solid var(--border2);color:var(--text2);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;transition:all .12s}
   .detail-btn:hover{border-color:var(--blue);color:var(--blue)}
 
@@ -340,6 +341,9 @@ const EQUIPOS_DATA = [
 ];
 const EM = {};
 EQUIPOS_DATA.forEach(e=>EM[e.abv]=e);
+
+// Equipos aún con vida en el torneo
+const VIVOS=new Set(['FRA','ESP','BEL','ENG','NOR','SUI','ARG']);
 
 // 72 partidos fase de grupos Mundial 2026
 const FIXTURE = [
@@ -718,7 +722,7 @@ function calcCupo(cupo){
 // RENDER TABLA
 // ═══════════════════════════════════════════════
 function renderTabla(){
-  const rows=CUPOS_FIJOS.map(c=>{const{total,det}=calcCupo(c);return{c,total,det};});
+
   rows.sort((a,b)=>b.total-a.total);
   const jugados=getFixture().filter(p=>p.jugado).length;
   const lider=rows[0];
@@ -737,7 +741,8 @@ function renderTabla(){
     const pClass=i===0?'pos-1':i===1?'pos-2':i===2?'pos-3':'';
     const badges=r.c.equipos.map(abv=>{
       const ep=r.det[abv]?r.det[abv].pts:0;
-      return`<span class="badge${ep>0?' has-pts':''}" title="${EM[abv]?EM[abv].nombre:abv}">${abv}${ep>0?' +'+ep:''}</span>`;
+      const cls=!VIVOS.has(abv)?'elim':ep>0?'has-pts':'';
+      return`<span class="badge ${cls}" title="${EM[abv]?EM[abv].nombre:abv}">${abv}${ep>0?' +'+ep:''}</span>`;
     }).join('');
     return`<tr onclick="showDetail('${r.c.id}')">
       <td class="pos ${pClass}" style="white-space:nowrap">${pIcon}</td>
@@ -847,7 +852,10 @@ function renderCupos(filter){
     list.map(c=>{
       const{total}=calcCupo(c);
       const presupuesto=c.equipos.reduce((s,a)=>s+(EM[a]?EM[a].valor:0),0);
-      const badges=c.equipos.map(a=>`<span class="badge">${a}</span>`).join('');
+      const badges=c.equipos.map(a=>{
+        const cls=!VIVOS.has(a)?'elim':'';
+        return`<span class="badge ${cls}">${a}</span>`;
+      }).join('');
       return`<div class="cupo-card-public" onclick="showDetail('${c.id}')">
         <div style="font-size:14px;font-weight:700;color:var(--text)">${c.player}</div>
         <div style="font-size:12px;color:var(--text3);margin-top:2px;margin-bottom:10px;">${c.num?"Cupo #"+c.num:"Cupo único"} · ${presupuesto} cr.</div>
