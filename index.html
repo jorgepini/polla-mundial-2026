@@ -464,7 +464,9 @@ const FIXTURE = [
   {id:"QF-3",grupo:"Cuartos de Final",local:"NOR",visitante:"ENG",fecha:"2026-07-11",jugado:false,gl:0,gv:0},
   {id:"QF-4",grupo:"Cuartos de Final",local:"ARG",visitante:"SUI",fecha:"2026-07-11",jugado:false,gl:0,gv:0},
   // SEMIFINALES
-  // SEMIFINALES (TBD - se agregan cuando se confirmen los cruces)
+  // SEMIFINALES
+  {id:"SF-1",grupo:"Semifinal",local:"FRA",visitante:"ESP",fecha:"2026-07-14",jugado:false,gl:0,gv:0},
+  {id:"SF-2",grupo:"Semifinal",local:"ARG",visitante:"ENG",fecha:"2026-07-15",jugado:false,gl:0,gv:0},
   // TERCER PUESTO
   {id:"3RD",grupo:"Tercer Puesto",local:"TBD",visitante:"TBD",fecha:"2026-07-18",jugado:false,gl:0,gv:0},
   // FINAL
@@ -639,10 +641,8 @@ function getFixtureConBracket(){
   const fx=getFixture();
   const g=pid=>getGanador(pid);
 
-  // Semifinales: ganadores de Cuartos
-  setTBD(fx,'SF-1', g('QF-1'), g('QF-2'));
-  setTBD(fx,'SF-2', g('QF-3'), g('QF-4'));
-
+  // Semifinales: ya tienen equipos fijos
+  // Tercer puesto y Final: ganadores/perdedores de semis
   const p_sf1=getPerdedor('SF-1',fx), p_sf2=getPerdedor('SF-2',fx);
   setTBD(fx,'3RD', p_sf1, p_sf2);
   setTBD(fx,'FINAL', g('SF-1'), g('SF-2'));
